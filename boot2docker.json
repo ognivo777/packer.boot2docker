@@ -1,0 +1,77 @@
+{
+  "builders": [
+	{
+	  "type": "virtualbox-iso",
+	  "guest_os_type": "Linux_64",
+	  "iso_url": "file://./boot2docker.iso",
+	  "iso_checksum": "1f1ce49fae03b063d98ff70e945b971fd4d111f4a91e533a0812bb961a7bcb02",
+    "iso_checksum_type": "sha256",
+    "guest_additions_mode": "disable",
+    "keep_registered": "false",
+    "ssh_username": "docker",
+	  "ssh_password": "tcuser",
+	  "boot_wait": "4s",
+	  "shutdown_command": "sudo poweroff",
+	  "boot_command" : [
+	  	"<wait10><wait10>"
+	  	],
+	  "export_opts": [
+	  	"--manifest",
+	  	"--vsys", "0",
+	  	"--description","{{user `vm_description`}}",
+	  	"--version", "{{user `vm_version`}}"
+	  ],
+	  "format":"ova",
+	  "vm_name":"boot2docker_template" 
+	}],
+  "provisioners": [{
+    "type": "shell",
+    "pause_before":"1s",
+    "execute_command": "echo '' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+    "inline": [
+      "cp -R /tmp/tce ~/"
+    ]},{
+    "type": "shell",
+    "pause_before":"1s",
+    "inline": [
+      "tce-load -iw parted.tcz",
+      "tce-load -iw grub2-multi.tcz"
+      ]},
+    {
+    "type": "shell",
+    "pause_before":"1s",
+    "execute_command": "echo '' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+    "inline": [
+      "export PATH=$PATH:/usr/local/sbin:/usr/local/bin",
+      "parted /dev/sda mktable msdos",
+      "parted /dev/sda mkpart primary ext3 1% 99%",
+      "parted /dev/sda set 1 boot on",
+      "mkfs.ext3 /dev/sda1",
+      "parted /dev/sda print",
+      "rebuildfstab",
+      "sleep 2",
+      "mount /mnt/sda1",
+      "echo \"etc/passwd\" > /opt/.filetool.lst",
+      "/bin/tar -C / -T /opt/.filetool.lst -cvzf /mnt/sda1/mydata.tgz",
+      "mv ~/tce /mnt/sda1/",
+      "cp -pR /opt /mnt/sda1",
+      "cp -pR /home /mnt/sda1",
+      "echo INSTALLING GRUB",
+      "grub-install --target=i386-pc --boot-directory=/mnt/sda1/boot /dev/sda",
+      "mount /mnt/sr0/",
+      "sudo cp -pR /mnt/sr0/boot/* /mnt/sda1/boot/",
+      "echo set timeout=3 > /mnt/sda1/boot/grub/grub.cfg",
+      "echo menuentry \\\"Boot2docker\\\" { >> /mnt/sda1/boot/grub/grub.cfg",
+      "echo  linux /boot/vmlinuz64 com1=9600,8n1 loglevel=3 user=docker console=ttyS0 console=tty0 noembed nomodeset tce=sda1 opt=sda1 home=sda1 restore=sda1 >> /mnt/sda1/boot/grub/grub.cfg",
+      "echo  initrd /boot/initrd.img >> /mnt/sda1/boot/grub/grub.cfg",
+      "echo } >> /mnt/sda1/boot/grub/grub.cfg",
+      "reboot"
+    ]
+  },{
+    "type": "shell",
+    "pause_before":"15s",
+    "inline": [
+      "echo THANKS FOR WHATCHING!",
+      "echo ---===  BYE!  ===---"
+      ]}]
+}
