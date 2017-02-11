@@ -1,5 +1,5 @@
 # packer.boot2docker
-HashiCorp Packer build for boot2docker persistance VM image for VirtualBox. Created virtual appliance boot from HDD and has persistant */opt* and */home* folders. Also installed extensions will not remove after reboot.
+HashiCorp Packer build for boot2docker persistance VM image for VirtualBox. Created virtual appliance booting from HDD and has persistant */opt* and */home* folders. Also installed extensions will not remove after reboot.
 
 This VM is very small (~50Mb) and useful for developers, who wants to play with Docker.
 
