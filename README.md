@@ -14,4 +14,4 @@ This VM is very small (~50Mb) and useful for developers, who wants to play with 
 * Open boot2docker.json and fix "iso_checksum" using actual value from download page
 * Run Packer: `packer build boot2docker.json`
 
-After building was complete *boot2docker_template.ova* appears in *output-virtualbox-iso* folder.
+After building complete *boot2docker_template.ova* appears in *output-virtualbox-iso* folder.
