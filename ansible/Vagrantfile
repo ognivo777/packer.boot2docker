@@ -1,0 +1,47 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "file://../packer_virtualbox-iso_virtualbox.box"
+  config.vm.box_check_update = false
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # config.vm.network "private_network", ip: "192.168.33.10"
+  # config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "private_network", ip: "192.168.50.101", virtualbox__intnet: true, nic_type: "virtio", auto_config: false
+
+  # config.vm.network "public_network"
+
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "vagrant_boot2docker_ansible"
+    vb.gui = true
+    vb.memory = "512"
+    vb.cpus = 2
+  end
+  
+  config.ssh.username="docker"
+  config.ssh.password="tcuser"
+  config.ssh.shell="/bin/sh -l"
+
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+
+    tce-load -wi python.tcz
+    tce-load -wi python-setuptools.tcz
+    tce-load -wi gcc.tcz
+    tce-load -wi python-dev.tcz
+    tce-load -wi linux-kernel-sources-env.tcz
+    tce-load -wi gmp-dev.tcz
+    echo "before csleep"
+    sleep 5
+    echo "after csleep"
+    wget http://releases.ansible.com/ansible/ansible-latest.tar.gz
+    tar -xzvf ansible-latest.tar.gz
+    cd ansible-2.2.1.0/
+    python setup.py build
+    sudo python setup.py install
+    
+  SHELL
+end
