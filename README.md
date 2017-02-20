@@ -20,6 +20,10 @@ When building complete *boot2docker_template.ova* appears in *output-virtualbox-
 *boot2docker_box.json* - same as boot2docker.json but creates `packer_virtualbox-iso_virtualbox.box` file.
 
 # Vagrant Ansible
+This box uses NFS sync folder. So you under windows have to install vagrant plugin first:
+`vagrant plugin install vagrant-winnfsd`
+See https://github.com/winnfsd/vagrant-winnfsd for details.
+
 Create VM with installed Ansible:
 ```bash
 packer build boot2docker_box.json
