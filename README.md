@@ -15,3 +15,14 @@ This VM is very small (~50Mb) and useful for developers, who wants to play with 
 * Run Packer: `packer build boot2docker.json`
 
 When building complete *boot2docker_template.ova* appears in *output-virtualbox-iso* folder.
+
+# Other options
+*boot2docker_box.json* - same as boot2docker.json but creates `packer_virtualbox-iso_virtualbox.box` file.
+
+# Vagrant Ansible
+Create VM with installed Ansible:
+```bash
+packer build boot2docker_box.json
+cd ansible
+vagrant up
+```
