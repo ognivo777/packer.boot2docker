@@ -14,19 +14,12 @@ This VM is very small (~50Mb) and useful for developers, who wants to play with 
 * Open boot2docker.json and fix "iso_checksum" using actual value from download page
 * Run Packer: `packer build boot2docker.json`
 
-When building complete *boot2docker_template.ova* appears in *output-virtualbox-iso* folder.
+When building complete **boot2docker_template.ova** appears in **output-virtualbox-iso** folder.
 
 # Other options
-*boot2docker_box.json* - same as boot2docker.json but creates `packer_virtualbox-iso_virtualbox.box` file.
+**boot2docker_box.json** - same as boot2docker.json but creates **packer_virtualbox-iso_virtualbox.box** file.
 
-# Vagrant Ansible
+# Example Vagrant file
 This box uses NFS sync folder. So under windows you have to install vagrant plugin first:
 `vagrant plugin install vagrant-winnfsd`
 See https://github.com/winnfsd/vagrant-winnfsd for details.
-
-Create VM with installed Ansible:
-```bash
-packer build boot2docker_box.json
-cd ansible
-vagrant up
-```
