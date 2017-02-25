@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.name = "vagrant_boot2docker_ansible"
     vb.gui = true
-    vb.memory = "512"
+    vb.memory = "2048"
     vb.cpus = 2
   end
   
@@ -24,22 +24,48 @@ Vagrant.configure("2") do |config|
   config.ssh.shell="/bin/sh -l"
 
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
-
+  
+    sudo chown -R docker /home/docker
     tce-load -wi python.tcz
     tce-load -wi python-setuptools.tcz
-    tce-load -wi gcc.tcz
-    tce-load -wi python-dev.tcz
-    tce-load -wi linux-kernel-sources-env.tcz
-    tce-load -wi gmp-dev.tcz
-    tce-load -wi mc
+    export ANSTMP="/tmp/asnible-install"
+    export TCETMP="$ANSTMP/tce_tmp/optional"
+    mkdir -p $TCETMP
+    tce-load -wi -t $TCETMP gcc.tcz
+    tce-load -wi -t $TCETMP python-dev.tcz
+    tce-load -wi -t $TCETMP linux-kernel-sources-env.tcz
+    tce-load -wi -t $TCETMP gmp-dev.tcz
     sleep 5
+    cd $ANSTMP
     wget http://releases.ansible.com/ansible/ansible-latest.tar.gz
     tar -xzvf ansible-latest.tar.gz
     cd ansible-*/
+    echo "... create time mark ..."
+    touch /tmp/timemark
+    find . -exec touch {} \;
     python setup.py build
     sudo python setup.py install
-    cd ..
-    sudo rm -rf ansible-*
+    sleep 3
+    find /usr/local -newer /tmp/timemark -not -type d > /tmp/list
+    tar -T /tmp/list -czvf /tmp/ansible-new-files.tar.gz
+    mkdir /tmp/pkg
+    cd /tmp/pkg
+    tar -xf /tmp/ansible-new-files.tar.gz
+    cd /tmp
+    tce-load -wi -t $TCETMP squashfs-tools.tcz
+    mksquashfs pkg/ ansible.tcz
+    cp ansible.tcz /mnt/sda1/tce/optional/
+    md5sum ansible.tcz > /mnt/sda1/tce/optional/ansible.tcz.md5.txt
+    echo "ansible.tcz" >> /mnt/sda1/tce/onboot.lst
+    ssh-keygen -t rsa -q -N '' -f ~/.ssh/id_rsa
+    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+    echo "do for check: ansible -i 'localhost ansible_python_interpreter=/usr/local/bin/python' -m setup localhost -u docker"
+    rm -rf /tmp/pkg
+    rm -f /tmp/ansible-new-files.tar.gz
+    rm -f /tmp/timemark
+    sudo rm -rf $ANSTMP
+    sudo rm -rf $TCETMP
     echo "ANSIBLE INSTALLATION FINISHED"
     echo "Check the version:"
     ansible --version
