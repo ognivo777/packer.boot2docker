@@ -4,8 +4,8 @@ HashiCorp Packer build for boot2docker persistance VM image for VirtualBox. Crea
 This VM is very small (~50Mb) and useful for developers, who wants to play with Docker.
 
 ####Requirements
-* [Packer](#packer) 
-* [VirtualBox](#virtualbox)
+* [Packer](https://www.vagrantup.com/) 
+* [VirtualBox](https://www.virtualbox.org/)
 
 # Usage
 * `git clone https://github.com/ognivo777/packer.boot2docker.git`
