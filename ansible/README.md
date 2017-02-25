@@ -2,7 +2,12 @@
 I realy love boot2docker project. This is simplest way to dive into Docker under Windows. So offen Ansible used for provision containers and docker infrastructure.
 This vagrant file describes smallest VM (about 120Mb) with Docker and Ansible inside for every day use by developers.
 
-# Usage
+#### Requirements
+* [Vagrant](https://www.vagrantup.com/) 
+* [VirtualBox](https://www.virtualbox.org/)
+* **packer_virtualbox-iso_virtualbox.box** - created with packer using config on parent folder.
+
+#### Usage
 ```
 git clone https://github.com/ognivo777/packer.boot2docker.git
 cd packer.boot2docker/ansible
