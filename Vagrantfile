@@ -10,10 +10,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./", "/home/docker/sync", id: "docker", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
 
   config.vm.provider "virtualbox" do |vb|
-    vb.name = "vagrant_boot2docker"
-    vb.gui = true
-    vb.memory = "2048"
-    vb.cpus = 2
+    vb.customize [ "modifyvm", :id, "--memory", 1024, "--cpus", 1, "--name", "vagrant_boot2docker"]
   end
   
   config.ssh.username="docker"
